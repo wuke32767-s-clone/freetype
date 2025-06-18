@@ -41,9 +41,9 @@ jobs:
           mkdir build
           cd build
           if "${{ matrix.arch }}" == "x64" (
-            cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release ..
+            cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release .. -D BUILD_SHARED_LIBS=true
           ) else (
-            cmake -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release ..
+            cmake -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release .. -D BUILD_SHARED_LIBS=true
           )
           cmake --build . --config Release
 
@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake -DCMAKE_BUILD_TYPE=Release .. -D BUILD_SHARED_LIBS=true
           cmake --build . --config Release --parallel
 
       - name: Archive artifacts
