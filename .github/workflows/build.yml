@@ -1,0 +1,62 @@
+# ai-generated
+name: Build FreeType
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - platform: win-x64
+            os: windows-latest
+            arch: x64
+            toolchain: msvc
+          - platform: win-x86
+            os: windows-latest
+            arch: x86
+            toolchain: msvc
+          - platform: macos-x64
+            os: macos-latest
+            arch: x64
+            toolchain: cmake
+          - platform: linux-x64
+            os: ubuntu-latest
+            arch: x64
+            toolchain: cmake
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build (Windows - MSVC)
+        if: matrix.toolchain == 'msvc'
+        shell: cmd
+        run: |
+          mkdir build
+          cd build
+          if "${{ matrix.arch }}" == "x64" (
+            cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release ..
+          ) else (
+            cmake -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release ..
+          )
+          cmake --build . --config Release
+
+      - name: Build (macOS/Linux - CMake)
+        if: matrix.toolchain == 'cmake'
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release --parallel
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: freetype-${{ matrix.platform }}
+          path: build/Release/
