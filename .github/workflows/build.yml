@@ -59,4 +59,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: freetype-${{ matrix.platform }}
-          path: build/Release/
+          path: build/
